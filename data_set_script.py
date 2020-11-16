@@ -36,23 +36,23 @@ def rotate_n_noise_image(image, angle):
 def create_dataset():
     # piezas_repo/
     #  - torre_roja/
-    #    - torre_fondo_blanco_roja.png
-    #    - torre_fondo_blanco_roja.png
-    #    - torre_fondo_negro_roja.png
-    #    - piezas_repo/torre_roja/torre_fondo_blanco_roja_45_3_32.png
+    #    - torre_fondo_blanco_roja.jpg
+    #    - torre_fondo_blanco_roja.jpg
+    #    - torre_fondo_negro_roja.jpg
+    #    - piezas_repo/torre_roja/torre_fondo_blanco_roja_45_3_32.jpg
     #  - torre_azul
     #  - fondo_blanco
     #  - fondo_negro
     #  . . .
-    images = glob.glob('./*/*/*.png')
+    images = glob.glob('./*/*/*.jpg')
 
     with alive_bar(100) as bar:
         for image in images:
             for i in range(5):
                 for j in range(50):
                     new_img_name = image.replace(
-                        ".png",
-                        "_1_{0}_{1}.png".format(i, j)
+                        ".jpg",
+                        "_1_{0}_{1}.jpg".format(i, j)
                     )
 
                     n_img = rotate_n_noise_image(
@@ -63,8 +63,8 @@ def create_dataset():
 
                 for i in range(310, 360):
                     new_img_name = image.replace(
-                        ".png",
-                        "_2_{0}_{1}.png".format(i, j)
+                        ".jpg",
+                        "_2_{0}_{1}.jpg".format(i, j)
                     )
 
                     n_img = rotate_n_noise_image(
