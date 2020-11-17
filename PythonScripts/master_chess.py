@@ -1,15 +1,16 @@
-import numpy as np
-import cv2 as cv
 import cv2
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch
-import numpy as np
 import chess
+import torch
 import chess.svg
 import chess.engine
+
+import numpy as np
+import torch.nn as nn
+import torch.nn.functional as F
+
 from time import sleep
+from PIL import Image
+from torchvision.transforms import ToTensor
 
 
 # define the NN architecture
@@ -57,38 +58,49 @@ class ConvAutoencoder(nn.Module):
 # initialize the NN
 model = ConvAutoencoder()
 model.load_state_dict(torch.load('model.pt', map_location=torch.device('cpu')))
-
-from PIL import Image
-from torchvision.transforms import ToTensor
-
-mapping = {'alfil_azul': 0, 'alfil_rojo': 1, 'caballo_azul': 2, 'caballo_rojo': 3, 'fondo_blanco': 4, 'fondo_negro': 5, 'peon_azul': 6, 'peon_rojo': 7, 'reina_azul': 8, 'reina_rojo': 9, 'rey_azul': 10, 'rey_rojo': 11, 'torre_azul': 12, 'torre_rojo': 13}
-
+mapping = {
+    'alfil_azul': 0,
+    'alfil_rojo': 1,
+    'caballo_azul': 2,
+    'caballo_rojo': 3,
+    'fondo_blanco': 4,
+    'fondo_negro': 5,
+    'peon_azul': 6,
+    'peon_rojo': 7,
+    'reina_azul': 8,
+    'reina_rojo': 9,
+    'rey_azul': 10,
+    'rey_rojo': 11,
+    'torre_azul': 12,
+    'torre_rojo': 13
+}
 rev_mapping = {v:k for k,v in mapping.items()}
 
 
 def idx2piece(idx):
     return get_piece(rev_mapping[idx.item()])
 
-def get_piece(piece):
-        return {
-            'alfil_azul': 'b',
-            'alfil_rojo': 'B',
-            'caballo_azul': 'n',
-            'caballo_rojo': 'N',
-            'peon_azul': 'p',
-            'peon_rojo': 'P',
-            'reina_azul': 'q',
-            'reina_rojo': 'Q',
-            'rey_azul': 'K',
-            'rey_rojo': 'k',
-            'torre_azul': 'r',
-            'torre_rojo': 'R'
-        }.get(piece, '.')
 
-get_piece_ = lambda piece: {".": False}.get(piece, piece)
+def get_piece(piece):
+    return {
+        'alfil_azul': 'b',
+        'alfil_rojo': 'B',
+        'caballo_azul': 'n',            
+        'caballo_rojo': 'N',
+        'peon_azul': 'p',
+        'peon_rojo': 'P',
+        'reina_azul': 'q',
+        'reina_rojo': 'Q',
+        'rey_azul': 'K',
+        'rey_rojo': 'k',
+        'torre_azul': 'r',
+        'torre_rojo': 'R'
+    }.get(piece, '.')
+
     
 def from_board_to_fne(board):
     fne_board = []
+    get_piece_ = lambda piece: {".": False}.get(piece, piece)
     # 'for loop' until the shape is defined
     for row in board.splitlines():
         fne_row = ""
@@ -116,39 +128,31 @@ def from_board_to_fne(board):
 
 
 vid = cv2.VideoCapture(0)
-
 if(vid.isOpened() == False):
     print('Error opening video stream or file')
 
 while(vid.isOpened()):
     ret, img = vid.read()
     if ret == True:
-
-        img = cv.imread('original.jpg')
-        img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+        img = cv2.imread('original.jpg')
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         rows,cols,ch = img.shape
         pts1 = np.float32([[92,152],[737, 142],[57, 764],[780, 770]])
         pts2 = np.float32([[0,0],[512,0],[0,512],[512,512]])
-        M = cv.getPerspectiveTransform(pts1,pts2)
-        dst = cv.warpPerspective(img,M,(512,512))
+        M = cv2.getPerspectiveTransform(pts1,pts2)
+        dst = cv2.warpPerspective(img,M,(512,512))
 
-        squares = []
-        for i in range(8):
-            for j in range(8):
-                img2 = dst[64*i:64*i + 64, 64*j:64*j + 64]
-                squares.append(img2)
-
-        squares = np.array(squares)
-
+        squares = np.array([
+            dst[64*i:64*i + 64, 64*j:64*j + 64]
+            for i in range(8)
+            for j in range(8)
+        ])
         squares = squares.transpose((0, 3, 1, 2))
-
         x = torch.from_numpy(squares).float()
-
         y = model(x)
         y = model(x)
         y = torch.max(y, 1)
-
 
         board = [[None for j in range(8)] for j in range(8)]
         for i, piece in enumerate(map(idx2piece,y.indices)):
@@ -163,7 +167,6 @@ while(vid.isOpened()):
         board_white = chess.Board(f'{board_fen} w')
         board_black = chess.Board(f'{board_fen} b')
 
-        
         engine = chess.engine.SimpleEngine.popen_uci("stockfish")
         x = engine.play(board_white, limit)
         
@@ -176,5 +179,3 @@ while(vid.isOpened()):
     else:
         break
 vid.release()
-
-

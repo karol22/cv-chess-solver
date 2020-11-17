@@ -2,12 +2,8 @@
 import cv2
 import numpy as np
 
-
 source_window = 'Source image'
 corners_window = 'Corners detected'
-
-
-
 
 vid = cv2.VideoCapture(0)
 

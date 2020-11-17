@@ -4,6 +4,7 @@ def from_board_to_fne(board):
             ".": False
         }.get(piece, piece)
 
+
     fne_board = []
     # 'for loop' until the shape is defined
     for row in board.splitlines():

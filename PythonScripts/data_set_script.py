@@ -11,7 +11,7 @@ def sp_noise(image):
     Add salt and pepper noise to image
     prob: Probability of the noise
     '''
-    prob = random()/9 # Noise probability [.00 ~ .111... ]
+    prob = random()/20 # Noise probability [.00 ~ .05]
     output = np.zeros(image.shape, np.uint8)
     thres = 1 - prob
     for i in range(image.shape[0]):
@@ -34,6 +34,9 @@ def rotate_n_noise_image(image, angle):
 
 
 def create_dataset():
+    # Script must be run in the images parent directory
+    # outisde "piezas_repo/" 
+    #
     # piezas_repo/
     #  - torre_roja/
     #    - torre_fondo_blanco_roja.png
@@ -44,34 +47,20 @@ def create_dataset():
     #  - fondo_blanco
     #  - fondo_negro
     #  . . .
-    images = glob.glob('./*/*/*.png')
+    images = glob.glob('./*/*/*.jpg')
 
-    with alive_bar(100) as bar:
+    with alive_bar(32000) as bar: # 32,000 images to be processed
         for image in images:
-            for i in range(5):
-                for j in range(50):
-                    new_img_name = image.replace(
-                        ".png",
-                        "_1_{0}_{1}.png".format(i, j)
-                    )
+            for i in range(1000):
+                new_img_name = image.replace(
+                    ".jpg",
+                    "_{0}_.jpg".format(i)
+                )
 
-                    n_img = rotate_n_noise_image(
-                        cv2.imread(image), # An image
-                        i                  # Angle [0 - 50]
-                    )
-                    cv2.imwrite(new_img_name, n_img)
-
-                for i in range(310, 360):
-                    new_img_name = image.replace(
-                        ".png",
-                        "_2_{0}_{1}.png".format(i, j)
-                    )
-
-                    n_img = rotate_n_noise_image(
-                        cv2.imread(image), # An image
-                        i                  # Angle [330 - 360]
-                    )
-                    cv2.imwrite(new_img_name, n_img)
+                cv2.imwrite(
+                    new_img_name,
+                    sp_noise(cv2.imread(image))
+                )
                 bar()
 
 
