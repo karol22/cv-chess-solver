@@ -6,7 +6,7 @@ by [Karol Gutierrez](https://github.com/karol22), [Guillermo Herrera](https://gi
 
 ---
 
-The objective of this project is to make a 1:1 chess game against a computer using [OpenCV for Python](https://docs.opencv.org/master/) where a camera will detect a chessboard and the game pieces from the upper view. The system will give instructions to the main user to move the pieces in order to keep the game.
+The objective of this project is to make a 1:1 chess game helper using [OpenCV for Python](https://docs.opencv.org/master/) where a camera will detect a chessboard and the game pieces from the upper view. The system will provide the next best possible move for blacks and whites given the current configuration of the board.
 
 The following diagram explains how the model is built using the *image recognition*, *Machine Learning* and *artifitial inteligence using the stockfish engine*:
 
@@ -29,7 +29,7 @@ This process is divided in some steps:
     - Some scripts where this process (and further more) can be analyzed, are the following: [Chessboard](https://github.com/karol22/cv-chess-solver/blob/main/Notebooks/chessboard.ipynb), [Split board](https://github.com/karol22/cv-chess-solver/blob/main/Notebooks/split_board.ipynb) and [Model CNN 2](https://github.com/karol22/cv-chess-solver/blob/main/Notebooks/Model_CNN_2.ipynb).
 
 2. Data processing:
-    - That dataset was processed in a *Neuronal Network* using the following script [Model CNN](./Notebooks/Model_CNN.ipynb) to get the label's characteristics in order that the classifier will return a model that will be used to identify each board square given. Having this information, the board can be represented in a structure that can be easily processed to get the game's data. The structure that we're using is the [Forsyth–Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation0).
+    - That dataset was processed in a *Convolutional Neuronal Network* using the following script [Model CNN](./Notebooks/Model_CNN.ipynb) to get the label's characteristics in order that the classifier will return a model that will be used to identify each board square given. Having this information, the board can be represented in a structure that can be easily processed to get the game's data. The structure that we're using is the [Forsyth–Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation0).
     
     - Using this notation we can represent a board as the string: **4t1r1/p1p2pp1/1d1p3p/1P3P2/1P6/2c1D3/PA4PP/4T1R1**
 
@@ -38,11 +38,11 @@ This process is divided in some steps:
     - The system will:
         1. Process the video's frames taken from the camera to identify the board to get the data of each square.
 
-        2. Identify each square's value using the model obtained by the classifier.
+        2. Identify each square's class by using the model obtained by the CNN.
 
         3. Once, all the board and their squares are identified, the game will be represented in the [Forsyth–Edwards Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation0).
         
-        4. Having the board represented at this form, using the [Master Chess](https://github.com/karol22/cv-chess-solver/blob/main/Notebooks/Master%20Chess.ipynb) script, it was used to fed an AI analyzer using the [stockfish engine](https://pypi.org/project/stockfish/) from the [chess python](https://python-chess.readthedocs.io/en/latest/) module that will predict the best play for a user. This process was run in a [Google Colab](https://colab.research.google.com/) environment using the power from [CUDA architecture](https://developer.nvidia.com/how-to-cuda-python%20). A result of this process is an instructure to the user to make the computer's move.
+        4. Having the board represented at this form, using the [Master Chess](https://github.com/karol22/cv-chess-solver/blob/main/Notebooks/Master%20Chess.ipynb) script, it was used to fed an AI analyzer using the [stockfish engine](https://pypi.org/project/stockfish/) from the [chess python](https://python-chess.readthedocs.io/en/latest/) module that will predict the best play for a user. The CNN training process was run in a [Google Colab](https://colab.research.google.com/) environment using the power from [CUDA architecture](https://developer.nvidia.com/how-to-cuda-python%20). A result of this process is an instructure to the user to make the computer's move.
    
             ![chessboard play](https://backscattering.de/web-boardimage/board.png?fen=r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR&lastmove=h5f7&check=e8)
 
